@@ -1,0 +1,19 @@
+<% include partials/header.ejs %>
+
+<% if (article) { %>
+        <h1><%= article.title %></h1>
+
+        <h5>writen by <%= article.auther %></h5>
+        <p><%= article.body %></p>
+        <a href="/article/edit/<%= article.id %>">    
+            <button type="submit" class="btn btn-primary">edit</button>
+        </a>
+        <a href="/article/delete/<%= article.id %>">    
+            <button type="submit" class="btn btn-danger delete-article" data-id="<%= article.id %>">delete</button>
+        </a>
+         
+<% } %>
+
+   
+<% include partials/footer.ejs %>
+    

@@ -1,0 +1,20 @@
+<% include partials/header.ejs %>
+
+    
+        <h1><%= title %></h1>
+
+        <ul class="list-group">
+        
+            
+            <% article.forEach(function(a){ %>
+                <li class="list-group-item"> <a href="/article/<%=a.id %>"> <%=a.title %></a> </li>
+              <% }); %>
+
+
+        </ul>
+
+
+
+    
+   
+<% include partials/footer.ejs %>
