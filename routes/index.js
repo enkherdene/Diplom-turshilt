@@ -111,4 +111,17 @@ router.get("/logout",function(req,res){
 	res.redirect("/");
 });
 
+router.post("/search", function(req,res){
+    db.query("SELECT * FROM advertisement WHERE INSTR(title, ?) > 0",[req.body.search], function(err, rows){
+        res.render('index', {
+            title: 'articles',
+            article: rows,
+            errors:''
+            
+        });
+    });
+
+})
+
+
 module.exports = router;

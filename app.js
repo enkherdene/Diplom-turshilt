@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 //const db= require('./db');
 var cookieParser = require('cookie-parser');
 
-const passport = require('passport');
+//const passport = require('passport');
 
 const expressValidator = require('express-validator');
 const flash= require('connect-flash');
