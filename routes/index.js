@@ -82,13 +82,13 @@ router.post('/login', function(req, res){
         if(err){
             console.log(err);
         }
-         if(!rows){
-            req.flash('danger','бүртгэлтэй цахим шуудан oldsongui');
+         if(!rows.length){
+            req.flash('danger','цахим шуудан эсвэл нууц үг буруу байна email');
             res.redirect('/login');
             return;
         }
         if(!bcrypt.compareSync(password, rows[0].password)){
-            req.flash('danger','password buruu');
+            req.flash('danger','цахим шуудан эсвэл нууц үг буруу байна pass');
             res.redirect('/login');
             return;
         }
@@ -98,8 +98,7 @@ router.post('/login', function(req, res){
             req.session.cookie.expires = false;
            }
         req.session.user=rows;
-        req.flash('success','hi');
-            res.redirect('/');
+        res.redirect('/');
 
 
        
