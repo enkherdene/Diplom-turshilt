@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 var bodyParser = require('body-parser');
 //const db= require('./db');
+var cookieParser = require('cookie-parser');
 
 const passport = require('passport');
 
@@ -24,6 +25,8 @@ const app= express();
 app.set('view engine', 'ejs');
 app.set('views',path.join(__dirname,'views'));
 
+//cookie parser
+app.use(cookieParser());
 
 // body-parser middleware
 
@@ -66,18 +69,18 @@ app.use(expressValidator({
      }
 }));
 //Passport config
-require('./config/passport')(passport);
+//require('./config/passport')(passport);
 
 //Passport midleware
-app.use(passport.initialize());
-app.use(passport.session());
+//app.use(passport.initialize());
+//app.use(passport.session());
 
 app.get('*', function(req,res,next){
-    res.locals.user=req.user || null;
+    res.locals.user=req.session.user || null;
     next();
 });
 app.post('*', function(req,res,next){
-    res.locals.user=req.user || null;
+    res.locals.user=req.session.user || null;
     next();
 });
 
