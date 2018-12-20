@@ -7,7 +7,7 @@ const db= require('../db');
 //add route
 router.get('/add', function(req,res){
     res.render('add', {
-        title: 'add articles',
+        title: 'Зар оруулах хүснэгт',
         article: req.body,
         errors:''
         
@@ -16,16 +16,16 @@ router.get('/add', function(req,res){
 });
 
 router.post('/add', function(req, res){
-    req.checkBody('title','title not null').notEmpty();
-    req.checkBody('auther','auther not null').notEmpty();
-    req.checkBody('body','body not null').notEmpty();
+    req.checkBody('title','Гарчиг хоосон байна').notEmpty();
+    req.checkBody('auther','Нийтлэгч хоосон байна').notEmpty();
+    //req.checkBody('body','body not null').notEmpty();
 
     // get error
     let errors =req.validationErrors();
 
     if(errors){
         res.render('add',{
-            title: 'add article',
+            title: 'Зар оруулах хүснэгт',
             article: req.body,
             errors:errors
         });
@@ -40,7 +40,7 @@ router.post('/add', function(req, res){
             console.log(err);
             return;
         }else{
-            req.flash('success','article added');
+            req.flash('success','Зар бүртгэгдлээ');
             res.redirect('/');
         }
     });
@@ -56,7 +56,7 @@ router.get('/:id', function(req,res){
      function(err, rows){
          console.log(rows);
         res.render('article', {
-            title: 'article',
+            title: 'Зар',
             article: rows[0],
             errors:''
         });
@@ -69,7 +69,7 @@ router.get('/edit/:id', function(req,res){
      function(err, rows){
          console.log(rows);
         res.render('edit_article', {
-            title: 'edit article',
+            title: 'Зарын мэдээлэл засах',
             article: rows[0],
             errors:''
         });
@@ -86,7 +86,7 @@ router.get('/edit/:id', function(req,res){
             console.log(err);
             return;
         }else{
-            req.flash('success','edited');
+            req.flash('success','Засагдлаа');
             res.redirect('/');
         }
     });

@@ -7,7 +7,7 @@ const db= require('../db');
 router.get('/', function (req, res) {
     db.query("SELECT * FROM advertisement", function(err, rows){
         res.render('index', {
-            title: 'articles',
+            title: 'Зарын мэдээлэл',
             article: rows,
             errors:''
             
@@ -17,24 +17,24 @@ router.get('/', function (req, res) {
 
 router.get('/signup', function(req,res){
     res.render('signup', {
-        title: 'sign up',
+        title: 'Бүртгэл',
         errors:''
     });
     
 });
 
 router.post('/signup', function(req, res){
-    req.checkBody('email','email hooson bj bolohgui').notEmpty();
-    req.checkBody('email','email @ orson bna').isEmail();
-    req.checkBody('password','hooson bj bolohgui').notEmpty();
-    req.checkBody('password2','password taarahgui bn').equals(req.body.password);
+    //req.checkBody('email','Цахим шуудан шалгана уу').notEmpty();
+    //req.checkBody('email','Цахим шуудан шалгана уу').isEmail();
+    req.checkBody('password','Нууц үг хоосон байж болохгүй').notEmpty();
+    req.checkBody('password2','Нууц үг таарахгүй байна').equals(req.body.password);
 
     // get error
     let errors =req.validationErrors();
 
     if(errors){
         res.render('signup',{
-            title: 'signup',
+            title: 'Бүртгэл',
             errors:errors
         });
         console.log(errors);
@@ -67,7 +67,7 @@ router.post('/signup', function(req, res){
 
 router.get('/login', function(req,res){
     res.render('login', {
-        title: 'login',
+        title: 'Нэвтрэх',
         errors:''
     });
     
@@ -114,7 +114,7 @@ router.get("/logout",function(req,res){
 router.post("/search", function(req,res){
     db.query("SELECT * FROM advertisement WHERE INSTR(title, ?) > 0",[req.body.search], function(err, rows){
         res.render('index', {
-            title: 'articles',
+            title: 'Зарын мэдээлэл',
             article: rows,
             errors:''
             

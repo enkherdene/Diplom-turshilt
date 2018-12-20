@@ -3,16 +3,34 @@
     
         <h1><%= title %></h1>
 
-        <ul class="list-group">
         
-            
-            <% article.forEach(function(a){ %>
-                <li class="list-group-item"> <a href="/article/<%=a.id %>"> <%=a.title %></a> </li>
-              <% }); %>
-
-
-        </ul>
-
+          <div class="container">
+                <div class="row">
+                  
+                  <div class="col-md-6">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Гарчиг</th>
+                            <th scope="col">Нийтлэгч</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <% article.forEach(function(a){ %>
+                                <tr>
+                                    <td><a href="/article/<%=a.id %>"> <%=a.title %></a></td>
+                                    <td><a href="/article/<%=a.id %>"> <%=a.auther %></a></td>
+                                </tr>
+                            <% }); %>
+                        
+                        </tbody>
+                    </table>
+                  </div>
+                  <div class="col-md-3">
+                    
+                  </div>
+                </div>
+              </div>
 
 
     
