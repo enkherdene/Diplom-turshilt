@@ -2,10 +2,11 @@ var express = require('express');
 var router = express.Router();
 
 const db= require('../db');
+const Ad = require("../models/advertisement");
+const User=require("../models/user");
 
-
-//add route
-router.get('/add', function(req,res){
+//зар нэмэх
+router.get('/add',ensureAuth, function(req,res){
     res.render('add', {
         title: 'Зар оруулах хүснэгт',
         article: req.body,
@@ -15,11 +16,11 @@ router.get('/add', function(req,res){
     
 });
 
-router.post('/add', function(req, res){
+router.post('/add', ensureAuth, function(req, res){
     req.checkBody('title','Гарчиг хоосон байна').notEmpty();
-    req.checkBody('auther','Нийтлэгч хоосон байна').notEmpty();
+    //req.checkBody('auther','Нийтлэгч хоосон байна').notEmpty();
     //req.checkBody('body','body not null').notEmpty();
-
+    
     // get error
     let errors =req.validationErrors();
 
@@ -29,58 +30,97 @@ router.post('/add', function(req, res){
             article: req.body,
             errors:errors
         });
-        console.log(errors);
+        //console.log(errors);
     }else{
-    let title= req.body.title;
-    let auther= req.body.auther;
-    let body= req.body.body;
-    db.query('INSERT INTO advertisement (id,title,auther,body) VALUES(?,?,?,?)',['',title,auther,body], 
-    function(err){
-        if(err){
+        User.findOne({
+            where:{
+                id:req.session.user.id
+            }
+        }).then(user=>{
+            if(user){
+                const adData = {
+                    title: req.body.title,
+                    auther: user.email,
+                    body: req.body.body
+                }
+           
+                Ad.create(adData)
+                .then(ad => {
+                    req.flash('success','Зар бүртгэгдлээ');
+                    res.redirect('/');
+                })
+                .catch(err => {
+                    console.log(err);
+                    return;
+                })
+            }
+        })
+        .catch(err => {
             console.log(err);
             return;
-        }else{
-            req.flash('success','Зар бүртгэгдлээ');
-            res.redirect('/');
-        }
-    });
+        })
 
     }
     
     return;
 });
 
-//get single ad
+//тухайн зарын мэдээлэл гаргах 
 router.get('/:id', function(req,res){
-    db.query("SELECT * FROM advertisement WHERE id= ?",[req.params.id], 
-     function(err, rows){
-         console.log(rows);
+    Ad.findOne({
+        where:{
+        id:req.params.id
+        }
+    }).then(ad=>{
         res.render('article', {
             title: 'Зар',
-            article: rows[0],
+            article: ad,
             errors:''
         });
-     });
+    })
+    .catch(err => {
+        res.send('error: ' + err)
+    })
+});
+
+ //тухайн сонгосон зарын мэдээлэл засварлах
+router.get('/edit/:id',ensureAuth, function(req,res){
+    User.findOne({
+        where:{
+            id:req.session.user.id
+        }
+    }).then(user=>{
+        if(user){
+            Ad.findOne({
+                where:{
+                id:req.params.id
+                }
+            }).then(ad=>{
+                if(user.email==ad.auther){
+                    res.render('edit_article', {
+                        title: 'Зарын мэдээлэл засах',
+                        article: ad,
+                        errors:''
+                    });
+                }else{
+                    res.redirect('/article/'+ad.id);
+                }
+            })
+            .catch(err => {
+                res.send('error: ' + err)
+            })
+        }
+    })
+    .catch(err => {
+        res.send('error: ' + err)
+    })
  });
 
- //edit article
-router.get('/edit/:id', function(req,res){
-    db.query("SELECT * FROM advertisement WHERE id= ?",[req.params.id], 
-     function(err, rows){
-         console.log(rows);
-        res.render('edit_article', {
-            title: 'Зарын мэдээлэл засах',
-            article: rows[0],
-            errors:''
-        });
-     });
- });
-
- router.post('/edit/:id', function(req, res){
+ router.post('/edit/:id',ensureAuth, function(req, res){
     let title= req.body.title;
     let auther= req.body.auther;
     let body= req.body.body;
-    db.query("UPDATE `advertisement` SET `title`= ?,`auther`= ?,`body`=? WHERE id=?",[title,auther,body,req.params.id], 
+    db.query("UPDATE `advertisements` SET `title`= ?,`auther`= ?,`body`=? WHERE id=?",[title,auther,body,req.params.id], 
     function(err){
         if(err){
             console.log(err);
@@ -91,20 +131,54 @@ router.get('/edit/:id', function(req,res){
         }
     });
 
-    console.log(req.body.title);
+   // console.log(req.body.title);
     return;
 });
 
+ //тухайн сонгосон зарын мэдээлэл устгах
 router.get('/delete/:id',function(req,res){
-    db.query("DELETE FROM advertisement WHERE id= ?",[req.params.id], 
-    function(err){
-        if(err){
-            console.log(err);
-            return;
-        }else{
-            res.redirect('/');
+    User.findOne({
+        where:{
+            id:req.session.user.id
         }
-    });
+    }).then(user=>{
+        if(user){
+            Ad.findOne({
+                where:{
+                id:req.params.id
+                }
+            }).then(ad=>{
+                if(user.email==ad.auther){
+                    ad.destroy();
+                    Ad.findAll().then(ads=>{
+                        res.render('index', {
+                            title: 'Зарын мэдээлэл',
+                            article: ads,
+                            errors:''
+                            
+                        });
+                    });
+                }else{
+                    res.redirect('/article/'+ad.id);
+                }
+            })
+            .catch(err => {
+                res.send('error: ' + err)
+            })
+        }
+    })
+    .catch(err => {
+        res.send('error: ' + err)
+    })
+    
 });
-
+ //хэрэглэгч нэвтэрсэн эсэх шалгах
+function ensureAuth(req, res, next){
+    if(req.session.user){
+        return next();
+    }else{
+        req.flash('danger', 'Нэвтэрч орно уу');
+        res.redirect('/login');
+    }
+}
 module.exports = router;

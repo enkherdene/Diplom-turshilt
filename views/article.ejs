@@ -5,13 +5,16 @@
 
         <h5>Нийтлэгч: <%= article.auther %></h5>
         <p>Тайлбар: <%= article.body %></p>
+        
         <% if(user){%>
-        <a href="/article/edit/<%= article.id %>">    
-            <button type="submit" class="btn btn-primary">Засах</button>
-        </a>
-        <a href="/article/delete/<%= article.id %>">    
-            <button type="submit" class="btn btn-danger delete-article" data-id="<%= article.id %>">Устгах</button>
-        </a>
+           <% if(user.email==article.auther){%>
+            <a href="/article/edit/<%= article.id %>">    
+                <button type="submit" class="btn btn-primary">Засах</button>
+            </a>
+            <a href="/article/delete/<%= article.id %>">    
+                <button type="submit" class="btn btn-danger delete-article" data-id="<%= article.id %>">Устгах</button>
+            </a>
+            <% } %>
         <% } %>
 <% } %>
 
